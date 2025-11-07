@@ -4,6 +4,7 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 export default withMermaid(defineConfig({
   title: 'LeetCode Solutions',
   description: 'Microsoft Teams Frontend Interview Prep - Top 30 LeetCode Problems',
+  base: '/js-guide/',
 
   themeConfig: {
     nav: [
@@ -60,7 +61,7 @@ export default withMermaid(defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com' }
+      { icon: 'github', link: 'https://github.com/ashitabi/js-guide' }
     ],
 
     search: {
