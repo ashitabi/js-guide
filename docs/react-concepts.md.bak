@@ -175,11 +175,9 @@ Hooks are functions that let you "hook into" React state and lifecycle features 
 
 ### Rules of Hooks 🚨
 
-<div v-pre>
-1. **Only call at the top level** - Don't call inside loops, conditions, or nested functions<br>
-2. **Only call from React functions** - Call from functional components or custom hooks<br>
+1. **Only call at the top level** - Don't call inside loops, conditions, or nested functions
+2. **Only call from React functions** - Call from functional components or custom hooks
 3. **Hooks must have consistent order** - React relies on call order to track state
-</div>
 
 ```javascript
 // ❌ WRONG - Conditional hook
@@ -913,12 +911,12 @@ const memoizedCallback = useMemo(() => {
 
 **Use Cases:**
 
-<div v-pre>
-1. Access DOM elements<br>
-2. Store mutable values without re-render<br>
-3. Keep previous values<br>
+```text
+1. Access DOM elements
+2. Store mutable values without re-render
+3. Keep previous values
 4. Store timeout/interval IDs
-</div>
+```
 
 ```javascript
 function TextInput() {
@@ -2170,12 +2168,12 @@ The Virtual DOM is a lightweight JavaScript representation of the actual DOM. Re
 
 **How it works:**
 
-<div v-pre>
-1. When state changes, React creates a new Virtual DOM tree<br>
-2. React compares it with the previous Virtual DOM (Reconciliation)<br>
-3. React calculates the minimal set of DOM operations needed<br>
+```text
+1. When state changes, React creates a new Virtual DOM tree
+2. React compares it with the previous Virtual DOM (Reconciliation)
+3. React calculates the minimal set of DOM operations needed
 4. React applies only those changes to the real DOM (Commit phase)
-</div>
+```
 
 **Benefits:**
 - Batches multiple updates together
@@ -2204,11 +2202,11 @@ Reconciliation is React's algorithm for diffing two Virtual DOM trees to determi
 
 **Key Concepts:**
 
-<div v-pre>
-1. **Element Type Comparison**: If type changes, React destroys old tree and builds new one<br>
-2. **Keys**: Help React identify which items changed, added, or removed<br>
-3. **Component State**: Preserved during re-renders if component type stays same
-</div>
+```text
+1. Element Type Comparison: If type changes, React destroys old tree and builds new one
+2. Keys: Help React identify which items changed, added, or removed
+3. Component State: Preserved during re-renders if component type stays same
+```
 
 ```javascript
 // ❌ Without keys - All items re-render
@@ -2425,7 +2423,7 @@ function ChatRoom({ roomId }) {
 
 **Common Use Cases:**
 
-```javascript
+```js
 // 1. Event listeners
 useEffect(() => {
   const handler = () => console.log('resized');
@@ -2465,13 +2463,13 @@ useEffect(() => {
 
 A component re-renders when:
 
-<div v-pre>
-1. State changes via setState<br>
-2. Props change from parent<br>
-3. Parent component re-renders<br>
-4. Context data updates<br>
+```text
+1. State changes via setState
+2. Props change from parent
+3. Parent component re-renders
+4. Context data updates
 5. forceUpdate gets invoked
-</div>
+```
 
 Use React.memo to prevent unnecessary child re-renders.
 

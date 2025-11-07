@@ -11,7 +11,6 @@ export default withMermaid(defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Problems', link: '/problems/' },
       { text: 'JavaScript Core', link: '/javascript-core' },
-      { text: 'React Concepts', link: '/react-concepts' },
       { text: 'Quick Reference', link: '/quick-reference' }
     ],
 
@@ -21,7 +20,6 @@ export default withMermaid(defineConfig({
         items: [
           { text: 'Overview', link: '/' },
           { text: 'JavaScript Core', link: '/javascript-core' },
-          { text: 'React Concepts', link: '/react-concepts' },
           { text: 'Quick Reference', link: '/quick-reference' }
         ]
       },
