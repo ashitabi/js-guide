@@ -1,0 +1,52 @@
+/* Custom styles for LeetCode website */
+
+.problem-card {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  transition: all 0.3s ease;
+}
+
+.problem-card:hover {
+  border-color: var(--vp-c-brand);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.problem-card h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.problem-card p {
+  margin: 8px 0 0 0;
+  color: var(--vp-c-text-2);
+}
+
+/* Code block improvements */
+.vp-doc div[class*='language-'] {
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+/* Custom info/tip/warning boxes */
+.custom-block {
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+/* Table styling */
+.vp-doc table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Heading anchors */
+.vp-doc h2,
+.vp-doc h3 {
+  border-bottom: 1px solid var(--vp-c-divider);
+  padding-bottom: 8px;
+}
