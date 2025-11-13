@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 
 export default withMermaid(defineConfig({
-  title: 'LeetCode Solutions',
-  description: 'Microsoft Teams Frontend Interview Prep - Top 30 LeetCode Problems',
+  title: 'JavaScript & React Guide',
+  description: 'Comprehensive JavaScript Core Concepts and LeetCode Problem Solutions',
   base: '/js-guide/',
 
   themeConfig: {
@@ -67,8 +67,8 @@ export default withMermaid(defineConfig({
     },
 
     footer: {
-      message: 'Good luck with your Microsoft interviews!',
-      copyright: 'Microsoft Teams Frontend Interview Prep | Nov 6-7, 2025'
+      message: 'Happy Learning!',
+      copyright: 'JavaScript & React Learning Guide | 2025'
     }
   },
 
