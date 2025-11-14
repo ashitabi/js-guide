@@ -2,81 +2,83 @@
 layout: home
 
 hero:
-  name: LeetCode Solutions
-  text: Microsoft Teams Frontend Interview Prep
-  tagline: Top 30 Must-Do Problems with Video Tutorials & JavaScript Solutions
+  name: Frontend Engineering Guide
+  text: JavaScript & React Mastery
+  tagline: Comprehensive guide to modern JavaScript concepts and problem-solving patterns
   actions:
     - theme: brand
       text: Get Started
-      link: /problems/two-sum
+      link: /javascript-core
     - theme: alt
-      text: Quick Reference
-      link: /quick-reference
+      text: Browse Problems
+      link: /problems/
 
 features:
-  - icon: 🎯
-    title: Curated Problems
-    details: Top 30 problems specifically selected for Microsoft Teams Frontend interviews (Nov 6-7, 2025)
-
-  - icon: 🎥
-    title: Video Tutorials
-    details: Multiple video explanations from NeetCode, Take U Forward, and other top educators
-
-  - icon: 💻
-    title: JavaScript Solutions
-    details: Complete JavaScript implementations with multiple approaches, time/space complexity analysis
-
-  - icon: 🔍
-    title: Search-Relevant
-    details: Problems tagged with search system relevance (LRU Cache, Trie, Top K, etc.)
-
-  - icon: ⚡
-    title: Interview Tips
-    details: Real interview tips, common pitfalls, and how to present your solution
-
-  - icon: 📊
-    title: Complexity Analysis
-    details: Detailed time and space complexity breakdowns for every solution
-
   - icon: 🔧
     title: JavaScript Core
-    details: Essential JS concepts - memoization, array methods, prototypes, closures, promises, and more
+    details: Essential JS concepts - closures, promises, currying, custom implementations, and modern patterns
 
-  - icon: ⚛️
-    title: React Concepts
-    details: Complete React guide - Hooks, lifecycle, state management, performance optimization, and modern patterns
+  - icon: 💻
+    title: Problem Solutions
+    details: Complete JavaScript implementations with multiple approaches and complexity analysis
+
+  - icon: 📊
+    title: Algorithm Patterns
+    details: Common patterns for arrays, strings, trees, graphs, and dynamic programming
+
+  - icon: 🎯
+    title: Data Structures
+    details: LRU Cache, Trie, Heaps, and other essential data structure implementations
+
+  - icon: ⚡
+    title: Practical Examples
+    details: Real-world use cases including task executors, dependency management, and more
+
+  - icon: 🧩
+    title: Problem Solving
+    details: 15 carefully selected problems covering fundamental to advanced concepts
+
+  - icon: 🎓
+    title: Learning Path
+    details: Structured approach from basics to advanced topics with clear explanations
+
+  - icon: 🚀
+    title: Modern JavaScript
+    details: ES6+ features, async patterns, and contemporary development practices
 ---
 
 ## About This Guide
 
-This comprehensive guide contains **15 carefully selected LeetCode problems** with:
+This comprehensive guide contains **essential JavaScript concepts** and **15 problem solutions** covering:
 
-- **Multiple Video Tutorials** from top educators
-- **Complete JavaScript Solutions** with optimal approaches
+- **JavaScript Core Concepts** - Closures, promises, currying, and advanced patterns
+- **Data Structures** - LRU Cache, Trie, heaps, and more
+- **Algorithm Patterns** - Arrays, strings, trees, graphs, dynamic programming
+- **Complete Solutions** with optimal approaches
 - **Time & Space Complexity** analysis
-- **Interview Tips** and common mistakes to avoid
-- **Search System Relevance** tags for Microsoft Teams
 
-## Problem Difficulty Breakdown
+## Problem Categories
 
 - **Easy**: 1 problem
 - **Medium**: 8 problems
 - **Hard**: 6 problems
 
-## Priority Problems ⭐
+## Key Topics ⭐
 
-These problems are **critical** for search/frontend roles:
+Essential concepts covered in this guide:
 
-1. **LRU Cache** - Caching strategies
-2. **Trie** - Autocomplete & prefix search
-3. **Top K Frequent** - Search ranking
-4. **Longest Substring** - String processing
+1. **Custom Promises** - Building your own promise implementation
+2. **Task Executor** - Dependency management and execution
+3. **Currying & Closures** - Functional programming patterns
+4. **LRU Cache** - Caching strategies
+5. **Trie** - Prefix search and autocomplete
+6. **Advanced Algorithms** - Graphs, dynamic programming, and more
 
 ## How to Use This Guide
 
-1. **Start with Easy** - Build confidence with Two Sum
-2. **Master the Mediums** - Core interview problems
-3. **Tackle the Hards** - Advanced problem-solving
-4. **Review Quick Reference** - Last-minute prep
+1. **Learn JavaScript Core** - Master fundamental concepts
+2. **Practice Problems** - Apply concepts to real problems
+3. **Understand Patterns** - Recognize common problem-solving approaches
+4. **Build Projects** - Use these patterns in your applications
 
-Good luck with your interviews! 🚀
+Happy learning! 🚀
