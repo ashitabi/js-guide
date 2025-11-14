@@ -49,6 +49,32 @@ O(n²)     = 10,000
 O(2ⁿ)     = 1.27 × 10³⁰ (astronomical!)
 ```
 
+**Complexity Growth Visualization:**
+
+```mermaid
+graph TD
+    A[Input Size n] --> B[O1: Constant]
+    A --> C[O log n: Logarithmic]
+    A --> D[On: Linear]
+    A --> E[On log n: Linearithmic]
+    A --> F[On²: Quadratic]
+    A --> G[O2ⁿ: Exponential]
+
+    B --> B1[Best - Always same time]
+    C --> C1[Excellent - Halves each step]
+    D --> D1[Good - Grows linearly]
+    E --> E1[Fair - Sorting algorithms]
+    F --> F1[Poor - Nested loops]
+    G --> G1[Very Bad - Doubles each step]
+
+    style B fill:#90EE90
+    style C fill:#98FB98
+    style D fill:#FFFFE0
+    style E fill:#FFE4B5
+    style F fill:#FFB6C1
+    style G fill:#FF6B6B
+```
+
 ---
 
 ### How to Calculate Time Complexity
@@ -140,6 +166,20 @@ function binarySearch(arr, target) {
 // Time Complexity: O(log n)
 ```
 
+**Binary Search Visualization:**
+
+```mermaid
+graph TD
+    A["Array: [2, 5, 8, 12, 16, 23, 38, 45, 56, 67, 78]<br/>Target: 23<br/>Iteration 1: Search all 11 items"] --> B["mid = 5, arr[5] = 23<br/>✓ Found!"]
+
+    A2["Array: [2, 5, 8, 12, 16, 23, 38, 45, 56, 67, 78]<br/>Target: 67<br/>Iteration 1: Search all 11 items"] --> C["mid = 5, arr[5] = 23<br/>23 < 67, search right →"]
+    C --> D["Iteration 2: Search 6 items<br/>[38, 45, 56, 67, 78]<br/>mid = 8, arr[8] = 56<br/>56 < 67, search right →"]
+    D --> E["Iteration 3: Search 3 items<br/>[67, 78]<br/>mid = 9, arr[9] = 67<br/>✓ Found!"]
+
+    style B fill:#90EE90
+    style E fill:#90EE90
+```
+
 **Why O(log n)?**
 - Iteration 1: n items
 - Iteration 2: n/2 items
@@ -167,6 +207,30 @@ function factorial(n) {
 // Time: O(n), Space: O(n) call stack
 ```
 
+**Call Stack Visualization for factorial(4):**
+
+```mermaid
+graph TB
+    subgraph "Call Stack Growth"
+    A[factorial4<br/>returns 4 × factorial3]
+    B[factorial3<br/>returns 3 × factorial2]
+    C[factorial2<br/>returns 2 × factorial1]
+    D[factorial1<br/>returns 1 - BASE CASE]
+    end
+
+    subgraph "Return Values Flow"
+    D2[factorial1<br/>returns 1] --> C2[factorial2<br/>returns 2 × 1 = 2]
+    C2 --> B2[factorial3<br/>returns 3 × 2 = 6]
+    B2 --> A2[factorial4<br/>returns 4 × 6 = 24]
+    end
+
+    A --> B --> C --> D
+    D --> D2
+
+    style D fill:#90EE90
+    style A2 fill:#FFD700
+```
+
 **Example 2: Binary Recursion (Exponential)**
 ```javascript
 function fibonacci(n) {
@@ -179,6 +243,43 @@ function fibonacci(n) {
 // Height: n, Nodes: ~2ⁿ
 // Time: O(2ⁿ), Space: O(n) call stack depth
 ```
+
+**Fibonacci Recursion Tree for fib(5):**
+
+```mermaid
+graph TD
+    A[fib5] --> B[fib4]
+    A --> C[fib3]
+
+    B --> D[fib3]
+    B --> E[fib2]
+
+    C --> F[fib2]
+    C --> G[fib1<br/>return 1]
+
+    D --> H[fib2]
+    D --> I[fib1<br/>return 1]
+
+    E --> J[fib1<br/>return 1]
+    E --> K[fib0<br/>return 0]
+
+    F --> L[fib1<br/>return 1]
+    F --> M[fib0<br/>return 0]
+
+    H --> N[fib1<br/>return 1]
+    H --> O[fib0<br/>return 0]
+
+    style G fill:#90EE90
+    style I fill:#90EE90
+    style J fill:#90EE90
+    style K fill:#FFB6C1
+    style L fill:#90EE90
+    style M fill:#FFB6C1
+    style N fill:#90EE90
+    style O fill:#FFB6C1
+```
+
+**Notice:** fib(3), fib(2), fib(1), fib(0) are computed multiple times! This redundancy causes exponential time complexity. **Solution**: Use memoization to cache results.
 
 **Example 3: Divide and Conquer**
 ```javascript
@@ -575,7 +676,25 @@ function maxSumSubarray(arr, k) {
 }
 
 console.log(maxSumSubarray([2, 1, 5, 1, 3, 2], 3)); // 9 (5+1+3)
+```
 
+**Sliding Window Visualization:**
+
+```mermaid
+graph LR
+    subgraph "Array: [2, 1, 5, 1, 3, 2], k=3"
+    A["Step 1<br/>[2, 1, 5] 1, 3, 2<br/>sum = 8"]
+    B["Step 2<br/>2, [1, 5, 1] 3, 2<br/>sum = 7<br/>remove 2, add 1"]
+    C["Step 3<br/>2, 1, [5, 1, 3] 2<br/>sum = 9 ✓<br/>remove 1, add 3"]
+    D["Step 4<br/>2, 1, 5, [1, 3, 2]<br/>sum = 6<br/>remove 5, add 2"]
+    end
+
+    A --> B --> C --> D
+
+    style C fill:#90EE90
+```
+
+```javascript
 /**
  * DYNAMIC WINDOW - Longest substring with at most k distinct characters
  */
@@ -659,7 +778,24 @@ function twoSumSorted(numbers, target) {
 }
 
 console.log(twoSumSorted([2, 7, 11, 15], 9)); // [0, 1]
+```
 
+**Two Pointers Visualization (Opposite Direction):**
+
+```mermaid
+graph TD
+    subgraph "Array: [2, 7, 11, 15], target=9"
+    A["Step 1<br/>L=0, R=3<br/>[2] 7, 11, [15]<br/>sum = 17 > 9<br/>Move R left ←"]
+    B["Step 2<br/>L=0, R=2<br/>[2] 7, [11] 15<br/>sum = 13 > 9<br/>Move R left ←"]
+    C["Step 3<br/>L=0, R=1<br/>[2] [7] 11, 15<br/>sum = 9 ✓<br/>Found!"]
+    end
+
+    A --> B --> C
+
+    style C fill:#90EE90
+```
+
+```javascript
 /**
  * SAME DIRECTION - Remove duplicates from sorted array (in-place)
  */
@@ -701,6 +837,33 @@ function hasCycle(head) {
   return false;
 }
 ```
+
+**Fast & Slow Pointers Visualization (Cycle Detection):**
+
+```mermaid
+graph LR
+    subgraph "Linked List with Cycle"
+    A[1] --> B[2]
+    B --> C[3]
+    C --> D[4]
+    D --> E[5]
+    E --> C
+    end
+
+    subgraph "Pointer Movement"
+    S1[Step 1: slow=1, fast=1]
+    S2[Step 2: slow=2, fast=3]
+    S3[Step 3: slow=3, fast=5]
+    S4[Step 4: slow=4, fast=4 ✓]
+    end
+
+    S1 --> S2 --> S3 --> S4
+
+    style D fill:#90EE90
+    style S4 fill:#90EE90
+```
+
+**How it works:** Fast pointer moves 2× speed. If cycle exists, fast will eventually catch up to slow (like runners on a circular track).
 
 ### Pattern Recognition Guide
 
