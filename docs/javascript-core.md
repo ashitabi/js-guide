@@ -2076,6 +2076,1231 @@ class CancellableTaskExecutor extends TaskExecutor {
 
 ---
 
+## 11. Debounce & Throttle ⚡
+
+Debounce and throttle are essential performance optimization techniques for controlling function execution frequency.
+
+### Debounce
+
+Debounce delays function execution until after a specified time has passed since the last invocation.
+
+**Use cases:** Search boxes, resize handlers, form validation
+
+```javascript
+/**
+ * Debounce - Execute after delay since last call
+ */
+function debounce(fn, delay) {
+  let timeoutId;
+
+  return function(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+}
+
+/**
+ * Advanced debounce with immediate execution option
+ */
+function debounceAdvanced(fn, delay, immediate = false) {
+  let timeoutId;
+
+  return function(...args) {
+    const callNow = immediate && !timeoutId;
+
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      if (!immediate) {
+        fn.apply(this, args);
+      }
+    }, delay);
+
+    if (callNow) {
+      fn.apply(this, args);
+    }
+  };
+}
+
+// Real-world example: Search autocomplete
+const searchAPI = debounce((query) => {
+  console.log(`Searching for: ${query}`);
+  fetch(`/api/search?q=${query}`)
+    .then(res => res.json())
+    .then(data => console.log(data));
+}, 300);
+
+// User types: "hello"
+// Only calls API once after user stops typing for 300ms
+```
+
+### Throttle
+
+Throttle ensures function executes at most once per specified interval.
+
+**Use cases:** Scroll handlers, button clicks, API rate limiting
+
+```javascript
+/**
+ * Throttle - Execute at most once per interval
+ */
+function throttle(fn, interval) {
+  let lastTime = 0;
+
+  return function(...args) {
+    const now = Date.now();
+
+    if (now - lastTime >= interval) {
+      lastTime = now;
+      fn.apply(this, args);
+    }
+  };
+}
+
+/**
+ * Advanced throttle with leading and trailing options
+ */
+function throttleAdvanced(fn, interval, options = {}) {
+  let timeoutId;
+  let lastTime = 0;
+  const { leading = true, trailing = true } = options;
+
+  return function(...args) {
+    const now = Date.now();
+
+    if (!leading && lastTime === 0) {
+      lastTime = now;
+    }
+
+    const remaining = interval - (now - lastTime);
+
+    if (remaining <= 0) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      lastTime = now;
+      fn.apply(this, args);
+    } else if (!timeoutId && trailing) {
+      timeoutId = setTimeout(() => {
+        lastTime = leading ? Date.now() : 0;
+        timeoutId = null;
+        fn.apply(this, args);
+      }, remaining);
+    }
+  };
+}
+
+// Real-world example: Scroll tracking
+const trackScroll = throttle(() => {
+  console.log('Scroll position:', window.scrollY);
+  // Send analytics event
+}, 1000);
+
+window.addEventListener('scroll', trackScroll);
+```
+
+### Debounce vs Throttle Comparison
+
+```javascript
+// Simulation: User types "hello" (5 keystrokes in 500ms)
+// Debounce (300ms): -----> execute once after typing stops
+// Throttle (300ms): execute -> wait 300ms -> execute if more input
+
+/**
+ * Visual representation
+ */
+// Events:     | | | | |
+// Debounce:              ✓ (waits for silence)
+// Throttle:   ✓     ✓      (executes periodically)
+```
+
+### Key Differences
+
+| Aspect | Debounce | Throttle |
+|--------|----------|----------|
+| **When** | After silence period | At regular intervals |
+| **Use case** | Search, validation | Scroll, resize |
+| **Calls** | Once after last event | Multiple times at intervals |
+| **Example** | Type "hello" → 1 call | Scroll 10s → 10 calls (1s throttle) |
+
+### Interview Tips
+
+**Common question:** "Implement debounce"
+
+```javascript
+// Key points to mention:
+// 1. Use closure to store timeout ID
+// 2. Clear previous timeout on each call
+// 3. Use apply() to preserve this context
+// 4. Return function that accepts ...args
+
+function debounce(fn, delay) {
+  let timeoutId; // Closure variable
+
+  return function(...args) { // Variadic function
+    clearTimeout(timeoutId); // Clear previous
+    timeoutId = setTimeout(() => {
+      fn.apply(this, args); // Preserve context
+    }, delay);
+  };
+}
+```
+
+---
+
+## 12. Algorithm Patterns 🎯
+
+Essential patterns for solving array and string problems efficiently.
+
+### Sliding Window Pattern
+
+The sliding window pattern optimizes problems that involve subarrays or substrings by maintaining a window that slides through the data.
+
+**When to use:** Problems asking for subarrays/substrings with specific properties
+
+```javascript
+/**
+ * FIXED WINDOW - Maximum sum of subarray of size k
+ */
+function maxSumSubarray(arr, k) {
+  if (arr.length < k) return null;
+
+  let maxSum = 0;
+  let windowSum = 0;
+
+  // Calculate first window
+  for (let i = 0; i < k; i++) {
+    windowSum += arr[i];
+  }
+  maxSum = windowSum;
+
+  // Slide the window
+  for (let i = k; i < arr.length; i++) {
+    windowSum = windowSum - arr[i - k] + arr[i];
+    maxSum = Math.max(maxSum, windowSum);
+  }
+
+  return maxSum;
+}
+
+console.log(maxSumSubarray([2, 1, 5, 1, 3, 2], 3)); // 9 (5+1+3)
+
+/**
+ * DYNAMIC WINDOW - Longest substring with at most k distinct characters
+ */
+function longestSubstringKDistinct(s, k) {
+  const map = new Map();
+  let left = 0;
+  let maxLen = 0;
+
+  for (let right = 0; right < s.length; right++) {
+    // Expand window - add character
+    map.set(s[right], (map.get(s[right]) || 0) + 1);
+
+    // Shrink window if needed
+    while (map.size > k) {
+      map.set(s[left], map.get(s[left]) - 1);
+      if (map.get(s[left]) === 0) {
+        map.delete(s[left]);
+      }
+      left++;
+    }
+
+    maxLen = Math.max(maxLen, right - left + 1);
+  }
+
+  return maxLen;
+}
+
+console.log(longestSubstringKDistinct("eceba", 2)); // 3 ("ece")
+
+/**
+ * Template for sliding window problems
+ */
+function slidingWindowTemplate(arr) {
+  let left = 0;
+  let result = 0; // Or whatever initial value
+
+  for (let right = 0; right < arr.length; right++) {
+    // Step 1: Expand window - add arr[right]
+
+    // Step 2: While window is invalid, shrink it
+    while (/* window condition violated */) {
+      // Remove arr[left] from window
+      left++;
+    }
+
+    // Step 3: Update result with current valid window
+    result = Math.max(result, right - left + 1);
+  }
+
+  return result;
+}
+```
+
+### Two Pointers Pattern
+
+Two pointers technique uses two references moving through data structure to solve problems in O(n) time.
+
+**When to use:** Sorted arrays, finding pairs, removing duplicates
+
+```javascript
+/**
+ * OPPOSITE DIRECTION - Two Sum II (sorted array)
+ */
+function twoSumSorted(numbers, target) {
+  let left = 0;
+  let right = numbers.length - 1;
+
+  while (left < right) {
+    const sum = numbers[left] + numbers[right];
+
+    if (sum === target) {
+      return [left, right];
+    } else if (sum < target) {
+      left++; // Need larger sum
+    } else {
+      right--; // Need smaller sum
+    }
+  }
+
+  return [-1, -1];
+}
+
+console.log(twoSumSorted([2, 7, 11, 15], 9)); // [0, 1]
+
+/**
+ * SAME DIRECTION - Remove duplicates from sorted array (in-place)
+ */
+function removeDuplicates(nums) {
+  if (nums.length === 0) return 0;
+
+  let slow = 0; // Position of last unique element
+
+  for (let fast = 1; fast < nums.length; fast++) {
+    if (nums[fast] !== nums[slow]) {
+      slow++;
+      nums[slow] = nums[fast];
+    }
+  }
+
+  return slow + 1; // New length
+}
+
+const arr = [1, 1, 2, 2, 3, 4, 4];
+console.log(removeDuplicates(arr)); // 4
+console.log(arr.slice(0, 4)); // [1, 2, 3, 4]
+
+/**
+ * FAST & SLOW POINTERS - Detect cycle in linked list (Floyd's algorithm)
+ */
+function hasCycle(head) {
+  let slow = head;
+  let fast = head;
+
+  while (fast && fast.next) {
+    slow = slow.next;      // Move 1 step
+    fast = fast.next.next;  // Move 2 steps
+
+    if (slow === fast) {
+      return true; // Cycle detected
+    }
+  }
+
+  return false;
+}
+```
+
+### Pattern Recognition Guide
+
+```text
+SLIDING WINDOW signals:
+- "substring", "subarray", "contiguous"
+- "maximum/minimum sum/length"
+- "at most/at least K"
+
+TWO POINTERS signals:
+- Sorted array
+- Finding pairs/triplets
+- Remove duplicates in-place
+- Linked list cycle
+- Palindrome checking
+```
+
+### Complexity Analysis
+
+| Pattern | Time | Space | Best For |
+|---------|------|-------|----------|
+| Fixed Window | O(n) | O(1) | Fixed-size subarrays |
+| Dynamic Window | O(n) | O(k) | Variable-size subarrays |
+| Two Pointers (Opposite) | O(n) | O(1) | Sorted array pairs |
+| Two Pointers (Same) | O(n) | O(1) | In-place modifications |
+| Fast & Slow | O(n) | O(1) | Cycle detection |
+
+---
+
+## 13. Array Method Polyfills
+
+Understanding how array methods work internally is essential for frontend interviews. Here are custom implementations of the most commonly asked array methods.
+
+### Array.prototype.map()
+
+```javascript
+Array.prototype.myMap = function(callback, thisArg) {
+  // Handle null/undefined
+  if (this == null) {
+    throw new TypeError('Array.prototype.myMap called on null or undefined');
+  }
+
+  // Ensure callback is a function
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+
+  // Convert to object and get length
+  const O = Object(this);
+  const len = O.length >>> 0; // Ensure unsigned 32-bit integer
+
+  // Create result array
+  const result = new Array(len);
+
+  // Iterate through array
+  for (let i = 0; i < len; i++) {
+    // Only process existing elements (handle sparse arrays)
+    if (i in O) {
+      result[i] = callback.call(thisArg, O[i], i, O);
+    }
+  }
+
+  return result;
+};
+
+// Usage
+const numbers = [1, 2, 3, 4];
+const doubled = numbers.myMap(x => x * 2);
+console.log(doubled); // [2, 4, 6, 8]
+
+// With thisArg
+const multiplier = {
+  factor: 3,
+  multiply: function(num) {
+    return num * this.factor;
+  }
+};
+
+const tripled = numbers.myMap(function(x) {
+  return this.multiply(x);
+}, multiplier);
+console.log(tripled); // [3, 6, 9, 12]
+```
+
+**Key Points:**
+- Handle `null`/`undefined` input
+- Validate callback is a function
+- Use `>>>` 0 for length coercion to unsigned 32-bit integer
+- Check `i in O` to handle sparse arrays correctly
+- Use `callback.call(thisArg, ...)` to bind context
+
+---
+
+### Array.prototype.filter()
+
+```javascript
+Array.prototype.myFilter = function(callback, thisArg) {
+  // Handle null/undefined
+  if (this == null) {
+    throw new TypeError('Array.prototype.myFilter called on null or undefined');
+  }
+
+  // Ensure callback is a function
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+
+  // Convert to object and get length
+  const O = Object(this);
+  const len = O.length >>> 0;
+
+  // Create result array
+  const result = [];
+
+  // Iterate through array
+  for (let i = 0; i < len; i++) {
+    // Only process existing elements
+    if (i in O) {
+      const value = O[i];
+      // Add to result if callback returns truthy
+      if (callback.call(thisArg, value, i, O)) {
+        result.push(value);
+      }
+    }
+  }
+
+  return result;
+};
+
+// Usage
+const numbers = [1, 2, 3, 4, 5, 6];
+const evens = numbers.myFilter(x => x % 2 === 0);
+console.log(evens); // [2, 4, 6]
+
+// With objects
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 30 },
+  { name: 'Charlie', age: 28 }
+];
+
+const adults = users.myFilter(function(user) {
+  return user.age >= this.minAge;
+}, { minAge: 28 });
+console.log(adults); // [{ name: 'Bob', age: 30 }, { name: 'Charlie', age: 28 }]
+```
+
+**Key Points:**
+- Similar structure to map
+- Use `push()` instead of direct index assignment (result array grows dynamically)
+- Only add elements where callback returns truthy value
+
+---
+
+### Array.prototype.reduce()
+
+```javascript
+Array.prototype.myReduce = function(callback, initialValue) {
+  // Handle null/undefined
+  if (this == null) {
+    throw new TypeError('Array.prototype.myReduce called on null or undefined');
+  }
+
+  // Ensure callback is a function
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+
+  // Convert to object and get length
+  const O = Object(this);
+  const len = O.length >>> 0;
+
+  // Handle empty array with no initial value
+  if (len === 0 && arguments.length < 2) {
+    throw new TypeError('Reduce of empty array with no initial value');
+  }
+
+  // Initialize accumulator and starting index
+  let accumulator;
+  let startIndex = 0;
+
+  if (arguments.length >= 2) {
+    // Initial value provided
+    accumulator = initialValue;
+  } else {
+    // Find first existing element as initial value
+    let found = false;
+    for (let i = 0; i < len; i++) {
+      if (i in O) {
+        accumulator = O[i];
+        startIndex = i + 1;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      throw new TypeError('Reduce of empty array with no initial value');
+    }
+  }
+
+  // Iterate and reduce
+  for (let i = startIndex; i < len; i++) {
+    if (i in O) {
+      accumulator = callback(accumulator, O[i], i, O);
+    }
+  }
+
+  return accumulator;
+};
+
+// Usage Examples
+
+// Sum
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.myReduce((acc, curr) => acc + curr, 0);
+console.log(sum); // 15
+
+// Without initial value (first element becomes initial)
+const sum2 = numbers.myReduce((acc, curr) => acc + curr);
+console.log(sum2); // 15
+
+// Object transformation
+const people = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 30 },
+  { name: 'Charlie', age: 25 }
+];
+
+const groupedByAge = people.myReduce((acc, person) => {
+  const age = person.age;
+  if (!acc[age]) {
+    acc[age] = [];
+  }
+  acc[age].push(person);
+  return acc;
+}, {});
+
+console.log(groupedByAge);
+// {
+//   25: [{ name: 'Alice', age: 25 }, { name: 'Charlie', age: 25 }],
+//   30: [{ name: 'Bob', age: 30 }]
+// }
+
+// Flatten array
+const nested = [[1, 2], [3, 4], [5, 6]];
+const flattened = nested.myReduce((acc, curr) => acc.concat(curr), []);
+console.log(flattened); // [1, 2, 3, 4, 5, 6]
+
+// Count occurrences
+const fruits = ['apple', 'banana', 'apple', 'orange', 'banana', 'apple'];
+const count = fruits.myReduce((acc, fruit) => {
+  acc[fruit] = (acc[fruit] || 0) + 1;
+  return acc;
+}, {});
+console.log(count); // { apple: 3, banana: 2, orange: 1 }
+```
+
+**Key Points:**
+- Most complex of the three polyfills
+- Check if `initialValue` provided using `arguments.length`
+- Handle empty array with no initial value (throw error)
+- If no initial value, find first existing element
+- Handle sparse arrays by checking `i in O`
+
+---
+
+### Array.prototype.forEach()
+
+```javascript
+Array.prototype.myForEach = function(callback, thisArg) {
+  // Handle null/undefined
+  if (this == null) {
+    throw new TypeError('Array.prototype.myForEach called on null or undefined');
+  }
+
+  // Ensure callback is a function
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+
+  // Convert to object and get length
+  const O = Object(this);
+  const len = O.length >>> 0;
+
+  // Iterate through array
+  for (let i = 0; i < len; i++) {
+    // Only process existing elements
+    if (i in O) {
+      callback.call(thisArg, O[i], i, O);
+    }
+  }
+
+  // forEach returns undefined
+  return undefined;
+};
+
+// Usage
+const numbers = [1, 2, 3];
+numbers.myForEach((num, index) => {
+  console.log(`Index ${index}: ${num}`);
+});
+// Index 0: 1
+// Index 1: 2
+// Index 2: 3
+```
+
+---
+
+### Comparison Table
+
+| Method | Returns | Mutates Original | Common Use Case |
+|--------|---------|------------------|-----------------|
+| `map()` | New array (same length) | No | Transform each element |
+| `filter()` | New array (≤ length) | No | Select subset of elements |
+| `reduce()` | Single value (any type) | No | Accumulate/aggregate data |
+| `forEach()` | `undefined` | No (but can mutate via reference) | Side effects only |
+
+---
+
+### Edge Cases to Handle in Interviews
+
+**1. Sparse Arrays:**
+```javascript
+const sparse = [1, , 3]; // Note the hole at index 1
+sparse.myMap(x => x * 2); // [2, <empty>, 6]
+```
+
+**2. Array-like Objects:**
+```javascript
+const arrayLike = { 0: 'a', 1: 'b', length: 2 };
+Array.prototype.myMap.call(arrayLike, x => x.toUpperCase());
+// ['A', 'B']
+```
+
+**3. Length Coercion:**
+```javascript
+const weird = { 0: 'x', length: '2' }; // length is a string
+Array.prototype.myMap.call(weird, x => x);
+// Should handle length >>> 0 conversion
+```
+
+**4. Reduce Edge Cases:**
+```javascript
+// Empty array with no initial value
+[].myReduce((acc, val) => acc + val); // TypeError
+
+// Empty array with initial value
+[].myReduce((acc, val) => acc + val, 0); // 0
+
+// Sparse array
+[1, , , 4].myReduce((acc, val) => acc + val, 0); // 5 (skips holes)
+```
+
+---
+
+### Interview Tips
+
+**Common Questions:**
+1. "Implement map/filter/reduce" ⭐ Very common
+2. "What's the difference between map and forEach?"
+3. "How would you flatten an array using reduce?"
+4. "Implement a function to chain map, filter, reduce"
+
+**What Interviewers Look For:**
+- ✅ Proper error handling (null checks, function validation)
+- ✅ Correct handling of `thisArg` parameter
+- ✅ Understanding of sparse arrays (checking `i in O`)
+- ✅ Length coercion with `>>> 0`
+- ✅ Understanding when to use `call()` vs `apply()`
+- ✅ Reduce initialization logic
+
+**Bonus: Method Chaining**
+```javascript
+// Implementing chainable array methods
+class ChainableArray {
+  constructor(array) {
+    this.array = array;
+  }
+
+  map(callback) {
+    this.array = this.array.map(callback);
+    return this; // Return this for chaining
+  }
+
+  filter(callback) {
+    this.array = this.array.filter(callback);
+    return this;
+  }
+
+  reduce(callback, initial) {
+    return this.array.reduce(callback, initial);
+  }
+
+  value() {
+    return this.array;
+  }
+}
+
+// Usage
+const result = new ChainableArray([1, 2, 3, 4, 5])
+  .map(x => x * 2)
+  .filter(x => x > 5)
+  .reduce((acc, x) => acc + x, 0);
+
+console.log(result); // 18 (6 + 8 + 10)
+```
+
+---
+
+## 14. Promise Polyfills
+
+Understanding how Promise static methods work internally is crucial for handling async operations. Here are implementations of the most commonly asked Promise methods.
+
+### Promise.all()
+
+Waits for all promises to resolve, or rejects if any promise rejects. Returns results in the same order as input.
+
+```javascript
+Promise.myAll = function(promises) {
+  return new Promise((resolve, reject) => {
+    // Handle non-iterable input
+    if (!Array.isArray(promises)) {
+      return reject(new TypeError('Argument must be an array'));
+    }
+
+    // Handle empty array
+    if (promises.length === 0) {
+      return resolve([]);
+    }
+
+    const results = [];
+    let completed = 0;
+
+    promises.forEach((promise, index) => {
+      // Wrap non-promise values with Promise.resolve
+      Promise.resolve(promise)
+        .then(value => {
+          results[index] = value;
+          completed++;
+
+          // Resolve when all promises complete
+          if (completed === promises.length) {
+            resolve(results);
+          }
+        })
+        .catch(error => {
+          // Reject immediately on first error
+          reject(error);
+        });
+    });
+  });
+};
+
+// Usage Examples
+
+// All resolve
+Promise.myAll([
+  Promise.resolve(1),
+  Promise.resolve(2),
+  Promise.resolve(3)
+]).then(results => {
+  console.log(results); // [1, 2, 3]
+});
+
+// With delays (maintains order)
+Promise.myAll([
+  new Promise(resolve => setTimeout(() => resolve('first'), 300)),
+  new Promise(resolve => setTimeout(() => resolve('second'), 100)),
+  new Promise(resolve => setTimeout(() => resolve('third'), 200))
+]).then(results => {
+  console.log(results); // ['first', 'second', 'third']
+});
+
+// One rejects (fails fast)
+Promise.myAll([
+  Promise.resolve(1),
+  Promise.reject('Error!'),
+  Promise.resolve(3)
+]).catch(error => {
+  console.log(error); // 'Error!'
+});
+
+// With non-promise values
+Promise.myAll([1, 2, Promise.resolve(3)]).then(results => {
+  console.log(results); // [1, 2, 3]
+});
+```
+
+**Key Points:**
+- Returns a new Promise that resolves with an array of results
+- Maintains the order of input promises
+- Fails fast: rejects immediately on first rejection
+- Handles non-promise values by wrapping with `Promise.resolve()`
+- Empty array resolves immediately to `[]`
+
+---
+
+### Promise.race()
+
+Returns the result of the first promise to settle (resolve or reject).
+
+```javascript
+Promise.myRace = function(promises) {
+  return new Promise((resolve, reject) => {
+    // Handle non-iterable input
+    if (!Array.isArray(promises)) {
+      return reject(new TypeError('Argument must be an array'));
+    }
+
+    // Handle empty array (never settles)
+    if (promises.length === 0) {
+      return; // Never resolves or rejects
+    }
+
+    promises.forEach(promise => {
+      // Wrap non-promise values with Promise.resolve
+      Promise.resolve(promise)
+        .then(resolve)  // Resolve with first resolution
+        .catch(reject); // Reject with first rejection
+    });
+  });
+};
+
+// Usage Examples
+
+// First to resolve wins
+Promise.myRace([
+  new Promise(resolve => setTimeout(() => resolve('slow'), 500)),
+  new Promise(resolve => setTimeout(() => resolve('fast'), 100)),
+  new Promise(resolve => setTimeout(() => resolve('slower'), 300))
+]).then(result => {
+  console.log(result); // 'fast'
+});
+
+// First to reject wins
+Promise.myRace([
+  new Promise((_, reject) => setTimeout(() => reject('error'), 100)),
+  new Promise(resolve => setTimeout(() => resolve('success'), 200))
+]).catch(error => {
+  console.log(error); // 'error'
+});
+
+// Timeout pattern
+function timeout(ms) {
+  return new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout')), ms)
+  );
+}
+
+function fetchWithTimeout(url, ms) {
+  return Promise.myRace([
+    fetch(url),
+    timeout(ms)
+  ]);
+}
+```
+
+**Key Points:**
+- Returns the first promise to settle (resolve or reject)
+- Once settled, ignores other promises
+- Empty array creates a promise that never settles
+- Useful for implementing timeouts
+
+---
+
+### Promise.any()
+
+Resolves when any promise resolves. Rejects only if all promises reject (with AggregateError).
+
+```javascript
+Promise.myAny = function(promises) {
+  return new Promise((resolve, reject) => {
+    // Handle non-iterable input
+    if (!Array.isArray(promises)) {
+      return reject(new TypeError('Argument must be an array'));
+    }
+
+    // Handle empty array
+    if (promises.length === 0) {
+      return reject(new AggregateError([], 'All promises were rejected'));
+    }
+
+    const errors = [];
+    let rejected = 0;
+
+    promises.forEach((promise, index) => {
+      // Wrap non-promise values with Promise.resolve
+      Promise.resolve(promise)
+        .then(value => {
+          // Resolve immediately on first success
+          resolve(value);
+        })
+        .catch(error => {
+          errors[index] = error;
+          rejected++;
+
+          // Reject only when all promises reject
+          if (rejected === promises.length) {
+            reject(new AggregateError(errors, 'All promises were rejected'));
+          }
+        });
+    });
+  });
+};
+
+// Usage Examples
+
+// First success wins
+Promise.myAny([
+  Promise.reject('Error 1'),
+  Promise.resolve('Success!'),
+  Promise.reject('Error 2')
+]).then(result => {
+  console.log(result); // 'Success!'
+});
+
+// All reject
+Promise.myAny([
+  Promise.reject('Error 1'),
+  Promise.reject('Error 2'),
+  Promise.reject('Error 3')
+]).catch(error => {
+  console.log(error.name); // 'AggregateError'
+  console.log(error.errors); // ['Error 1', 'Error 2', 'Error 3']
+});
+
+// Fallback pattern (try multiple sources)
+Promise.myAny([
+  fetch('https://api.primary.com/data'),
+  fetch('https://api.backup1.com/data'),
+  fetch('https://api.backup2.com/data')
+]).then(response => {
+  console.log('Got response from first available server');
+});
+```
+
+**Key Points:**
+- Opposite of `Promise.all()`: succeeds on first success
+- Rejects only when all promises reject
+- Returns `AggregateError` containing all rejection reasons
+- Useful for fallback scenarios
+
+---
+
+### Promise.allSettled()
+
+Waits for all promises to settle (resolve or reject). Never rejects - always resolves with status array.
+
+```javascript
+Promise.myAllSettled = function(promises) {
+  return new Promise((resolve, reject) => {
+    // Handle non-iterable input
+    if (!Array.isArray(promises)) {
+      return reject(new TypeError('Argument must be an array'));
+    }
+
+    // Handle empty array
+    if (promises.length === 0) {
+      return resolve([]);
+    }
+
+    const results = [];
+    let settled = 0;
+
+    promises.forEach((promise, index) => {
+      // Wrap non-promise values with Promise.resolve
+      Promise.resolve(promise)
+        .then(value => {
+          results[index] = {
+            status: 'fulfilled',
+            value: value
+          };
+        })
+        .catch(reason => {
+          results[index] = {
+            status: 'rejected',
+            reason: reason
+          };
+        })
+        .finally(() => {
+          settled++;
+
+          // Resolve when all promises settle
+          if (settled === promises.length) {
+            resolve(results);
+          }
+        });
+    });
+  });
+};
+
+// Usage Examples
+
+// Mixed success and failure
+Promise.myAllSettled([
+  Promise.resolve(1),
+  Promise.reject('Error!'),
+  Promise.resolve(3),
+  Promise.reject('Another error!')
+]).then(results => {
+  console.log(results);
+  // [
+  //   { status: 'fulfilled', value: 1 },
+  //   { status: 'rejected', reason: 'Error!' },
+  //   { status: 'fulfilled', value: 3 },
+  //   { status: 'rejected', reason: 'Another error!' }
+  // ]
+});
+
+// Process results
+Promise.myAllSettled([
+  fetch('/api/user'),
+  fetch('/api/posts'),
+  fetch('/api/comments')
+]).then(results => {
+  const successful = results.filter(r => r.status === 'fulfilled');
+  const failed = results.filter(r => r.status === 'rejected');
+
+  console.log(`${successful.length} succeeded, ${failed.length} failed`);
+
+  // Handle partial failures
+  successful.forEach(result => {
+    console.log('Got data:', result.value);
+  });
+
+  failed.forEach(result => {
+    console.error('Failed:', result.reason);
+  });
+});
+```
+
+**Key Points:**
+- Never rejects - always resolves with an array
+- Each result has `status` property ('fulfilled' or 'rejected')
+- Fulfilled promises have `value` property
+- Rejected promises have `reason` property
+- Useful when you need all results regardless of success/failure
+
+---
+
+### Comparison Table
+
+| Method | Resolves When | Rejects When | Use Case |
+|--------|---------------|--------------|----------|
+| `Promise.all()` | All promises resolve | Any promise rejects (fail-fast) | Need all results |
+| `Promise.race()` | First promise settles | First promise settles | Timeout, fastest response |
+| `Promise.any()` | First promise resolves | All promises reject | Fallback sources |
+| `Promise.allSettled()` | All promises settle | Never (always resolves) | Need all outcomes |
+
+---
+
+### Visual Comparison
+
+```javascript
+// Example promises
+const fast = new Promise(resolve => setTimeout(() => resolve('fast'), 100));
+const slow = new Promise(resolve => setTimeout(() => resolve('slow'), 500));
+const fail = new Promise((_, reject) => setTimeout(() => reject('error'), 200));
+
+// Promise.all - All must succeed
+Promise.all([fast, slow])
+  .then(results => console.log(results)) // ['fast', 'slow'] after 500ms
+
+Promise.all([fast, fail])
+  .catch(error => console.log(error)) // 'error' after 200ms (fail-fast)
+
+// Promise.race - First to finish
+Promise.race([fast, slow])
+  .then(result => console.log(result)) // 'fast' after 100ms
+
+// Promise.any - First success
+Promise.any([fail, slow])
+  .then(result => console.log(result)) // 'slow' after 500ms
+
+// Promise.allSettled - Wait for all
+Promise.allSettled([fast, fail])
+  .then(results => console.log(results))
+  // [
+  //   { status: 'fulfilled', value: 'fast' },
+  //   { status: 'rejected', reason: 'error' }
+  // ] after 200ms
+```
+
+---
+
+### Real-World Examples
+
+**1. Parallel API Calls (Promise.all)**
+```javascript
+async function fetchUserData(userId) {
+  try {
+    const [user, posts, comments] = await Promise.all([
+      fetch(`/api/users/${userId}`),
+      fetch(`/api/users/${userId}/posts`),
+      fetch(`/api/users/${userId}/comments`)
+    ]);
+
+    return {
+      user: await user.json(),
+      posts: await posts.json(),
+      comments: await comments.json()
+    };
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+  }
+}
+```
+
+**2. Request with Timeout (Promise.race)**
+```javascript
+function fetchWithTimeout(url, timeout = 5000) {
+  return Promise.race([
+    fetch(url),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timeout')), timeout)
+    )
+  ]);
+}
+```
+
+**3. Fallback Data Sources (Promise.any)**
+```javascript
+async function getDataWithFallback() {
+  try {
+    return await Promise.any([
+      fetch('https://primary-api.com/data'),
+      fetch('https://backup-api.com/data'),
+      fetch('https://cache-api.com/data')
+    ]);
+  } catch (error) {
+    console.error('All data sources failed:', error);
+    return getLocalCache();
+  }
+}
+```
+
+**4. Batch Processing (Promise.allSettled)**
+```javascript
+async function processBatch(items) {
+  const results = await Promise.allSettled(
+    items.map(item => processItem(item))
+  );
+
+  const successful = results.filter(r => r.status === 'fulfilled');
+  const failed = results.filter(r => r.status === 'rejected');
+
+  return {
+    successCount: successful.length,
+    failCount: failed.length,
+    data: successful.map(r => r.value),
+    errors: failed.map(r => r.reason)
+  };
+}
+```
+
+---
+
+### Interview Tips
+
+**Common Questions:**
+1. "Implement Promise.all/race/any/allSettled" ⭐ Very common
+2. "What's the difference between Promise.all and Promise.allSettled?"
+3. "How would you implement a timeout for fetch?"
+4. "Explain when to use Promise.any vs Promise.race"
+
+**What Interviewers Look For:**
+- ✅ Understanding of Promise states (pending, fulfilled, rejected)
+- ✅ Proper error handling for edge cases
+- ✅ Understanding of async iteration
+- ✅ Knowledge of when each method settles
+- ✅ Handling non-Promise values with `Promise.resolve()`
+- ✅ Understanding of AggregateError for `Promise.any()`
+
+**Key Differences to Remember:**
+
+| Question | Answer |
+|----------|--------|
+| When does `Promise.all()` reject? | On first rejection (fail-fast) |
+| When does `Promise.any()` reject? | When all promises reject |
+| What does `Promise.race()` return? | Result of first settled promise |
+| Does `Promise.allSettled()` ever reject? | No, always resolves |
+| How to handle timeouts? | Use `Promise.race()` with timeout promise |
+| Which methods maintain order? | `Promise.all()` and `Promise.allSettled()` |
+
+---
+
 ## Quick Reference Table
 
 | Concept | Time Complexity | Use Case |
