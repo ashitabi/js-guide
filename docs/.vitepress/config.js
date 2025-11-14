@@ -12,6 +12,7 @@ export default withMermaid(defineConfig({
       { text: 'Problems', link: '/problems/' },
       { text: 'JavaScript Core', link: '/javascript-core' },
       { text: 'DSA Fundamentals', link: '/dsa-fundamentals' },
+      { text: 'Web Vitals', link: '/web-vitals' },
       { text: 'Quick Reference', link: '/quick-reference' }
     ],
 
@@ -22,6 +23,7 @@ export default withMermaid(defineConfig({
           { text: 'Overview', link: '/' },
           { text: 'JavaScript Core', link: '/javascript-core' },
           { text: 'DSA Fundamentals', link: '/dsa-fundamentals' },
+          { text: 'Web Vitals', link: '/web-vitals' },
           { text: 'Quick Reference', link: '/quick-reference' }
         ]
       },
